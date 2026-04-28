@@ -719,3 +719,7 @@ def _get_alert_message(high_need_ngos: int, high_surplus: int) -> str:
         return f"🟢 {high_surplus} surplus source(s) available. Connect them with NGOs to prevent waste!"
     else:
         return "✅ No urgent alerts. Supply and demand appear balanced in this area."
+        
+from mangum import Mangum
+
+handler = Mangum(app)
