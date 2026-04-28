@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zero Waste Supply Chain</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Leaflet.js Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <!-- Leaflet Routing Machine -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="bg-gradient"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar glass">
+        <div class="sidebar-brand">
+            <i class="ph ph-leaf"></i> <span>Zero Waste</span>
+        </div>
+        
+        <div class="sidebar-nav">
+            <a href="#" data-target="home" class="sidebar-btn active">
+                <i class="ph ph-house"></i> <span>Home</span>
+            </a>
+            <a href="#" data-target="dashboard" class="sidebar-btn">
+                <i class="ph ph-layout"></i> <span>Dashboard</span>
+            </a>
+            <a href="#" data-target="map" class="sidebar-btn">
+                <i class="ph ph-map-trifold"></i> <span>Map</span>
+            </a>
+            <a href="#" data-target="ngos" class="sidebar-btn">
+                <i class="ph ph-heart"></i> <span>NGOs</span>
+            </a>
+            <a href="#" data-target="suppliers" class="sidebar-btn">
+                <i class="ph ph-storefront"></i> <span>Suppliers</span>
+            </a>
+            <a href="#" data-target="analytics" class="sidebar-btn">
+                <i class="ph ph-chart-line"></i> <span>Analytics</span>
+            </a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div id="nav-role-container" class="hidden text-center sidebar-role-box">
+                <span id="nav-role-badge" class="status-badge"></span>
+                <a href="#" onclick="switchRole()" class="switch-role-link">Switch Role</a>
+            </div>
+            
+            <div class="sidebar-actions">
+                <button onclick="toggleTheme()" class="btn-icon-glass" id="theme-toggle">
+                    <span id="themeIcon">☀️</span>
+                </button>
+                <a href="#" data-target="login" id="nav-login-btn" class="sidebar-btn auth-btn">
+                    <i class="ph ph-user"></i> <span>Login</span>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Mobile Top Nav (Hidden on Desktop) -->
+    <nav class="mobile-nav glass">
+        <div class="nav-brand">
+            <i class="ph ph-leaf"></i> Zero Waste
+        </div>
+        <button id="mobile-menu-btn" class="btn-icon-glass">
+            <i class="ph ph-list"></i>
+        </button>
+    </nav>
+
+    <main class="app-container">
+        
+        <!-- HOME PAGE -->
+        <section id="home" class="page-section active">
+            
+            <!-- SECTION 1: HERO -->
+            <div class="hero text-center section-spacing" style="padding-top: 2rem;">
+                <h1 class="hero-title-main">
+                    <span style="color: white;">Eliminate Food Waste.</span>
+                    <span class="text-green">Feed Communities.</span>
+                </h1>
+                <p class="hero-subtext">AI-powered platform connecting surplus food suppliers with NGOs in real time. Saving food. Saving lives.</p>
+                
+                <div class="hero-buttons">
+                    <button class="btn-primary btn-large" onclick="navigateTo('login')">Get Started &rarr;</button>
+                    <button class="btn-outline-glass btn-large">Watch Demo</button>
+                </div>
+                
+                <div class="hero-counter mt-2">
+                    <span id="count-food">0</span> kg saved &nbsp;|&nbsp; 
+                    <span id="count-ngos">0</span> NGOs &nbsp;|&nbsp; 
+                    <span id="count-alerts">0</span> alerts resolved
+                </div>
+            </div>
+
+            <!-- SECTION 2: HOW IT WORKS -->
+            <div class="section-spacing text-center">
+                <h2 class="section-title" style="justify-content: center;">How It Works</h2>
+                <div class="how-it-works-grid">
+                    <div class="step-card">
+                        <i class="ph ph-leaf step-icon text-success"></i>
+                        <h3>Track Inventory</h3>
+                        <p>Add your food stock. Our AI predicts expiry dates and flags items before they go to waste.</p>
+                    </div>
+                    <div class="step-card">
+                        <i class="ph ph-map-pin step-icon" style="color: #3b82f6;"></i>
+                        <h3>Smart Matching</h3>
+                        <p>We instantly match your surplus with the nearest high-need NGO using live GPS data.</p>
+                    </div>
+                    <div class="step-card">
+                        <i class="ph ph-handshake step-icon" style="color: #f59e0b;"></i>
+                        <h3>Donate & Redistribute</h3>
+                        <p>One click sends a donation request. NGOs get notified immediately. Food reaches people.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 3: LIVE IMPACT TICKER -->
+            <div class="ticker-wrap" style="margin-left: -20px; width: calc(100% + 40px);">
+                <div class="ticker-content">
+                    🌱 12,450 kg food saved this month &nbsp;&nbsp;&bull;&nbsp;&nbsp; 🤝 84 NGOs actively receiving donations &nbsp;&nbsp;&bull;&nbsp;&nbsp; 🌍 31,125 kg CO₂ prevented &nbsp;&nbsp;&bull;&nbsp;&nbsp; ⚡ 247 expiry alerts resolved &nbsp;&nbsp;&bull;&nbsp;&nbsp; 🏪 45 active suppliers on the platform &nbsp;&nbsp;&bull;&nbsp;&nbsp; ♻️ Zero Waste Intelligence — reducing food waste one donation at a time &nbsp;&nbsp;&bull;&nbsp;&nbsp; 🌱 12,450 kg food saved this month &nbsp;&nbsp;&bull;&nbsp;&nbsp; 🤝 84 NGOs actively receiving donations &nbsp;&nbsp;&bull;&nbsp;&nbsp; 🌍 31,125 kg CO₂ prevented
+                </div>
+            </div>
+
+            <!-- SECTION 4: FEATURES GRID -->
+            <div class="section-spacing">
+                <h2 class="section-title text-center" style="justify-content: center; margin-bottom: 2rem;">Built for Real Impact</h2>
+                <div class="features-grid-2x2">
+                    <div class="feature-card">
+                        <i class="ph ph-brain text-primary"></i>
+                        <h3>AI Expiry Prediction</h3>
+                        <p>Know when food expires before it happens. Get alerts 3 days early.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="ph ph-users-three text-success"></i>
+                        <h3>NGO Network</h3>
+                        <p>Connect with 80+ verified NGOs across your city in under 60 seconds.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="ph ph-currency-inr text-warning"></i>
+                        <h3>Smart Pricing</h3>
+                        <p>Automatically calculate discount prices to move near-expiry stock fast.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="ph ph-map-trifold text-danger"></i>
+                        <h3>Route Optimization</h3>
+                        <p>See the shortest route from your location to the nearest NGO on a live map.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 5: TESTIMONIALS -->
+            <div class="section-spacing text-center">
+                <h2 class="section-title" style="justify-content: center;">Trusted by Suppliers & NGOs</h2>
+                <div class="testimonials-grid">
+                    <div class="testimonial-card">
+                        <p class="testimonial-quote">"We used to throw away 30kg of food daily. Now it goes to families in need within hours."</p>
+                        <p class="testimonial-author">&mdash; Ravi K., Restaurant Owner</p>
+                        <div class="testimonial-stars">★★★★★</div>
+                    </div>
+                    <div class="testimonial-card">
+                        <p class="testimonial-quote">"The expiry alerts have helped us plan pickups perfectly. Game-changer for our kitchen."</p>
+                        <p class="testimonial-author">&mdash; Priya M., NGO Coordinator</p>
+                        <div class="testimonial-stars">★★★★★</div>
+                    </div>
+                    <div class="testimonial-card">
+                        <p class="testimonial-quote">"Zero Waste Intelligence helped us save ₹40,000 worth of food last month alone."</p>
+                        <p class="testimonial-author">&mdash; Amit S., Supermarket Manager</p>
+                        <div class="testimonial-stars">★★★★★</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 6: CTA BANNER -->
+            <div class="cta-banner">
+                <h2>Ready to stop wasting food?</h2>
+                <p>Join 45+ suppliers and 84 NGOs already making an impact.</p>
+                <button class="btn-primary btn-large" style="padding-left: 3rem; padding-right: 3rem;" onclick="navigateTo('login')">Start Saving Food Now &rarr;</button>
+            </div>
+
+        </section>
+
+        <!-- LOGIN / SIGNUP PAGE -->
+        <section id="login" class="page-section hidden">
+            <!-- ROLE SELECTION STEP -->
+            <div class="login-wrapper" id="role-selection-step">
+                <div class="text-center" style="width: 100%; max-width: 800px;">
+                    <h2 style="color: white; font-size: 22px; font-weight: bold; margin-bottom: 2rem;">I am a...</h2>
+                    <div class="role-cards-grid">
+                        <!-- LEFT CARD -->
+                        <div class="role-card glass" id="role-supplier" onclick="selectRole('supplier')">
+                            <i class="ph ph-storefront role-icon text-success"></i>
+                            <h3>Supplier</h3>
+                            <p class="role-subtitle">Restaurant, supermarket, or warehouse with surplus food</p>
+                            <p class="role-examples">e.g. Restaurant, Hotel, Supermarket, Warehouse</p>
+                            <div class="role-badge"><i class="ph-fill ph-check-circle"></i></div>
+                        </div>
+                        
+                        <!-- RIGHT CARD -->
+                        <div class="role-card glass" id="role-ngo" onclick="selectRole('ngo')">
+                            <i class="ph ph-hand-heart role-icon text-warning"></i>
+                            <h3>NGO / Receiver</h3>
+                            <p class="role-subtitle">Organisation that receives and distributes food to those in need</p>
+                            <p class="role-examples">e.g. Food bank, Community kitchen, Relief trust</p>
+                            <div class="role-badge"><i class="ph-fill ph-check-circle"></i></div>
+                        </div>
+                    </div>
+                    <button class="btn-primary mt-2" id="role-continue-btn" disabled onclick="confirmRole()" style="background: gray; box-shadow: none; width: 200px; padding: 1rem;">Continue</button>
+                </div>
+            </div>
+
+            <!-- EMAIL/PASSWORD STEP -->
+            <div class="login-wrapper hidden" id="auth-form-step">
+                <div class="glass-card login-card text-center">
+                    <i class="ph ph-user-circle icon-huge text-primary"></i>
+                    <h2 id="auth-title">Welcome Back</h2>
+                    <p class="text-muted" id="auth-subtitle">Login to access your dashboard</p>
+                    
+                    <form id="login-form">
+                        <div class="input-group">
+                            <i class="ph ph-envelope"></i>
+                            <input type="email" id="auth-email" placeholder="Email Address" required>
+                        </div>
+                        <div class="input-group">
+                            <i class="ph ph-lock"></i>
+                            <input type="password" id="auth-password" placeholder="Password" required>
+                        </div>
+                        <button type="submit" class="btn-primary btn-full" id="auth-submit">Login</button>
+                    </form>
+                    
+                    <p class="toggle-auth">
+                        <span id="auth-toggle-text">Don't have an account?</span> 
+                        <a href="#" id="auth-toggle-btn">Sign Up</a>
+                    </p>
+                    <a href="#" onclick="switchRole()" class="text-muted mt-1" style="display: inline-block; font-size: 0.9rem;"><i class="ph ph-arrow-left"></i> Back to Role Selection</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROFILE PAGE -->
+        <section id="profile" class="page-section hidden">
+            <div class="glass-card login-card text-center">
+                <i class="ph ph-user-check icon-huge text-primary"></i>
+                <h2>My Profile</h2>
+                <div class="profile-details">
+                    <p class="text-muted">Logged in as:</p>
+                    <h3 id="profile-email-display">user@example.com</h3>
+                </div>
+                <button class="btn-danger btn-full" id="logout-btn">Logout <i class="ph ph-sign-out"></i></button>
+            </div>
+        </section>
+
+        <!-- DASHBOARD PAGE -->
+        <section id="dashboard" class="page-section hidden">
+            
+            <div id="supplier-analyze-section">
+                <h2 class="section-title"><i class="ph ph-magnifying-glass"></i> Analyze Food Item</h2>
+                
+                <div class="glass-card mb-2">
+                    <form id="analyze-form" class="analyze-flex">
+                        <div class="input-group flex-grow">
+                            <i class="ph ph-bowl-food"></i>
+                            <input type="text" id="food-input" placeholder="Enter essential food (e.g. milk, rice, wheat...)" required autocomplete="off">
+                        </div>
+                        <button type="submit" class="btn-primary" id="analyze-btn">Analyze Food <i class="ph ph-sparkle"></i></button>
+                    </form>
+                </div>
+
+                <!-- Analysis Results Section -->
+                <div id="analyze-results" class="hidden mt-2">
+                    <div class="results-grid">
+                        <div class="glass-card result-card">
+                            <i class="ph ph-info text-primary"></i>
+                            <p class="text-muted">Recommendation</p>
+                            <h3 id="res-action">--</h3>
+                        </div>
+                        <div class="glass-card result-card">
+                            <i class="ph ph-tag text-success"></i>
+                            <p class="text-muted">Discount</p>
+                            <h3 id="res-discount">--</h3>
+                        </div>
+                        <div class="glass-card result-card">
+                            <i class="ph ph-currency-inr text-warning"></i>
+                            <p class="text-muted">Final Price</p>
+                            <h3 id="res-price">--</h3>
+                        </div>
+                        <div class="glass-card result-card">
+                            <i class="ph ph-trend-up text-info"></i>
+                            <p class="text-muted">Demand</p>
+                            <h3 id="res-demand">--</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DASHBOARD BLOCKS -->
+            <div id="dashboard-content" class="mt-2">
+                
+                <!-- ============================ -->
+                <!-- COMMON SHARED COMPONENTS     -->
+                <!-- ============================ -->
+                <div id="common-chart-container" class="dashboard-grid mb-2">
+                    <!-- BLOCK 3: Chart -->
+                    <div class="glass-card" style="grid-column: 1 / -1;">
+                        <h3 class="mb-1">Food Saved vs Wasted</h3>
+                        <div class="chart-container" style="position: relative; height:250px; width:100%">
+                            <canvas id="foodChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================ -->
+                <!-- SUPPLIER DASHBOARD           -->
+                <!-- ============================ -->
+                <div id="supplier-dashboard" class="hidden">
+                    
+                    <!-- SECTION 3: Expiring Soon Alert Banner -->
+                    <div class="glass-card mb-2" style="background: rgba(245, 158, 11, 0.1); border-color: var(--warning);">
+                        <div class="flex-align text-warning">
+                            <i class="ph ph-warning-circle icon-large"></i>
+                            <div style="flex-grow: 1;">
+                                <h3 style="margin: 0; color: var(--warning);">Urgent Action Required</h3>
+                                <p>You have 3 item(s) expiring within 3 days. Take action now →</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BLOCK 5: Quick Action Buttons -->
+                    <div class="quick-actions-grid mb-2">
+                        <button class="btn-outline-glass" onclick="navigateTo('ngos')"><i class="ph ph-map-pin"></i> Find Nearest NGO</button>
+                        <button class="btn-outline-glass" onclick="generateReport()"><i class="ph ph-file-text"></i> Generate Report</button>
+                        <button class="btn-outline-glass" onclick="navigateTo('map')"><i class="ph ph-map-trifold"></i> View Map</button>
+                    </div>
+
+                    <!-- BLOCK 1: Hero stat row -->
+                    <div class="stats-grid mb-2">
+                        <div class="glass-card stat-card">
+                            <p class="text-muted">Food Saved</p>
+                            <h3>12,450 kg</h3>
+                            <div class="stat-trend text-success"><i class="ph ph-caret-up"></i> +8% week</div>
+                        </div>
+                        <div class="glass-card stat-card">
+                            <p class="text-muted">NGOs Supported</p>
+                            <h3>84 NGOs</h3>
+                            <div class="stat-trend text-success"><i class="ph ph-caret-up"></i> +3 new</div>
+                        </div>
+                        <div class="glass-card stat-card">
+                            <p class="text-muted">CO₂ Reduced</p>
+                            <h3>31,125 kg</h3>
+                            <div class="stat-trend text-primary"><i class="ph ph-equals"></i> 1,500 trees</div>
+                        </div>
+                        <div class="glass-card stat-card">
+                            <p class="text-muted">Alerts This Month</p>
+                            <h3>247 Alerts</h3>
+                            <div class="stat-trend text-danger"><i class="ph ph-caret-down"></i> 12 critical</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid mb-2">
+                        <!-- SECTION 1: My Current Inventory -->
+                        <div class="glass-card" style="overflow-x: auto;">
+                            <h3 class="mb-1">My Current Inventory</h3>
+                            <table class="glass-table">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Quantity</th>
+                                        <th>Expires In</th>
+                                        <th>Urgency</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Milk</td>
+                                        <td>20 L</td>
+                                        <td class="text-danger font-bold">2 days</td>
+                                        <td><span class="status-badge bg-danger text-white">Critical</span></td>
+                                        <td>
+                                            <button class="btn-primary" onclick="triggerDonation(this)" style="padding: 4px 8px; font-size: 0.8rem;">Donate</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tomato</td>
+                                        <td>12 kg</td>
+                                        <td class="text-warning font-bold">3 days</td>
+                                        <td><span class="status-badge bg-warning text-black">Warning</span></td>
+                                        <td>
+                                            <button class="btn-primary" style="background: var(--info); padding: 4px 8px; font-size: 0.8rem;">List</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Rice</td>
+                                        <td>50 kg</td>
+                                        <td class="text-success font-bold">30 days</td>
+                                        <td><span class="status-badge bg-success text-white">Safe</span></td>
+                                        <td>
+                                            <button class="btn-primary" style="background: var(--danger); padding: 4px 8px; font-size: 0.8rem;"><i class="ph ph-x"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- SECTION 2: Add Food Item form -->
+                        <div class="glass-card">
+                            <h3 class="mb-1">Add Food Item</h3>
+                            <form id="supplier-add-item-form">
+                                <div class="input-group mb-1">
+                                    <i class="ph ph-bowl-food"></i>
+                                    <input type="text" placeholder="Item Name (e.g. Milk)" required>
+                                </div>
+                                <div class="flex-align gap-1 mb-1" style="gap: 1rem;">
+                                    <div class="input-group" style="margin-bottom: 0; flex: 1;">
+                                        <input type="number" placeholder="Quantity" required>
+                                    </div>
+                                    <div class="input-group" style="margin-bottom: 0; flex: 1;">
+                                        <select class="styled-select" style="width: 100%; border: none; background: transparent;">
+                                            <option>kg</option>
+                                            <option>Liters</option>
+                                            <option>Pieces</option>
+                                            <option>Loaves</option>
+                                            <option>Packs</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn-primary btn-full" onclick="alert('Item added! Expiry tracked.')">Add to Inventory</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- BLOCK 2: Live Expiry Timeline -->
+                    <div class="glass-card mb-2">
+                        <h3 class="mb-1">Items Expiring This Week</h3>
+                        <div class="expiry-timeline">
+                            <div class="expiry-item">
+                                <div class="expiry-info"><span>Milk (20L)</span> <span>2 days</span></div>
+                                <div class="progress-bar"><div class="progress-fill bg-danger" style="width: 95%;"></div></div>
+                                <div class="expiry-action text-danger">Critical <i class="ph ph-warning"></i></div>
+                            </div>
+                            <div class="expiry-item">
+                                <div class="expiry-info"><span>Tomato (12kg)</span> <span>3 days</span></div>
+                                <div class="progress-bar"><div class="progress-fill bg-warning" style="width: 60%;"></div></div>
+                                <div class="expiry-action text-warning">Warning <i class="ph ph-warning-circle"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================ -->
+                <!-- NGO DASHBOARD                -->
+                <!-- ============================ -->
+                <div id="ngo-dashboard" class="hidden">
+                    
+                    <!-- SECTION 4: NGO Stats Row -->
+                    <div class="stats-grid mb-2" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="glass-card stat-card">
+                            <p class="text-muted">Total Received</p>
+                            <h3>340 kg</h3>
+                        </div>
+                        <div class="glass-card stat-card">
+                            <p class="text-muted">This Week</p>
+                            <h3>45 kg</h3>
+                        </div>
+                        <div class="glass-card stat-card">
+                            <p class="text-muted">Families Served</p>
+                            <h3>~120</h3>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid mb-2">
+                        <!-- SECTION 1: Incoming Donations -->
+                        <div class="glass-card" style="overflow-x: auto;">
+                            <h3 class="mb-1">Incoming Donations</h3>
+                            <table class="glass-table">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Quantity</th>
+                                        <th>From</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Rice</td>
+                                        <td>15 kg</td>
+                                        <td>Restaurant A</td>
+                                        <td><span class="status-badge bg-success text-white">Ready for Pickup</span></td>
+                                        <td><button class="btn-primary" style="padding: 4px 8px; font-size: 0.8rem;">Accept</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Bread</td>
+                                        <td>20 loaves</td>
+                                        <td>Bakery Delight</td>
+                                        <td><span class="status-badge bg-warning text-black">Pending</span></td>
+                                        <td><button class="btn-primary" style="padding: 4px 8px; font-size: 0.8rem;">Accept</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div>
+                            <!-- SECTION 3: Our Need Level -->
+                            <div class="glass-card mb-2">
+                                <h3 class="mb-1 flex-align">Our Need Level <span class="live-dot" style="margin-left:auto;"></span></h3>
+                                <select id="ngo-need-level" class="styled-select mb-1" style="width: 100%;">
+                                    <option value="high">High Need</option>
+                                    <option value="medium">Medium Need</option>
+                                    <option value="low">Low Need</option>
+                                </select>
+                                <p class="text-muted text-sm"><i class="ph ph-check-circle text-success"></i> Currently accepting: All food types</p>
+                            </div>
+
+                            <!-- SECTION 2: Nearby Surplus -->
+                            <div class="glass-card">
+                                <h3 class="mb-1">Nearby Surplus</h3>
+                                <div style="background: rgba(0,0,0,0.2); height: 180px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                                    <p class="text-muted"><i class="ph ph-map-pin"></i> Map Preview Embedded Here</p>
+                                </div>
+                                <ul class="activity-feed mb-1" style="margin-top: 0;">
+                                    <li><span class="act-dot bg-success"></span> Restaurant A (1.5 km) - Rice, Bread</li>
+                                    <li><span class="act-dot bg-success"></span> Supermarket B (3.2 km) - Vegetables</li>
+                                </ul>
+                                <button class="btn-outline-glass btn-full" onclick="navigateTo('map')">View Full Map</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Error Banner -->
+            <div id="validation-error" class="glass-card error-card hidden mb-2">
+                <div class="flex-align">
+                    <i class="ph ph-warning-octagon icon-large"></i>
+                    <div>
+                        <h3>Item Not Allowed</h3>
+                        <p id="validation-msg">Only essential food items are allowed.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loader -->
+            <div id="analyze-loader" class="text-center hidden mb-2">
+                <i class="ph ph-spinner ph-spin icon-huge text-primary"></i>
+                <p>Analyzing supply chain metrics...</p>
+            </div>
+
+            <!-- Removed old Results Grid -->
+        </section>
+
+        <!-- MAP PAGE -->
+        <section id="map" class="page-section hidden">
+            <h2 class="section-title"><i class="ph ph-map-trifold"></i> Live Routing Map</h2>
+            <div class="glass-card map-wrapper">
+                <div id="map-container"></div>
+                <div class="map-legend glass">
+                    <h4>Legend</h4>
+                    <div><span class="legend-dot bg-danger"></span> Partner NGO</div>
+                    <hr>
+                    <div><span class="legend-dot bg-success"></span> Surplus Supplier</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NGOs PAGE -->
+        <section id="ngos" class="page-section hidden">
+            <h2 class="section-title"><i class="ph ph-heart"></i> Partner NGOs</h2>
+            <div class="glass-card filter-bar mb-2">
+                <div class="input-group">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input type="text" id="ngo-search" placeholder="Search NGOs...">
+                </div>
+                <select id="ngo-filter" class="styled-select">
+                    <option value="all">All Urgency Levels</option>
+                    <option value="high">High Need</option>
+                    <option value="medium">Medium Need</option>
+                    <option value="low">Low Need</option>
+                </select>
+            </div>
+            <div id="ngo-list" class="directory-grid">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+        <!-- SUPPLIERS PAGE -->
+        <section id="suppliers" class="page-section hidden">
+            <h2 class="section-title"><i class="ph ph-storefront"></i> Surplus Suppliers</h2>
+            <div class="glass-card filter-bar mb-2">
+                <div class="input-group">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input type="text" id="supplier-search" placeholder="Search Suppliers...">
+                </div>
+                <select id="supplier-filter" class="styled-select">
+                    <option value="all">All Categories</option>
+                    <option value="restaurant">Restaurants</option>
+                    <option value="supermarket">Supermarkets</option>
+                    <option value="warehouse">Warehouses</option>
+                </select>
+            </div>
+            <div id="supplier-list" class="directory-grid">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+        <!-- ANALYTICS PAGE -->
+        <section id="analytics" class="page-section hidden">
+            <h2 class="section-title"><i class="ph ph-chart-bar"></i> Network Analytics</h2>
+            <div class="features-grid">
+                <div class="glass-card text-center">
+                    <i class="ph ph-buildings icon-huge text-primary"></i>
+                    <h1 id="stat-ngos" class="display-value">0</h1>
+                    <p class="text-muted">Total NGOs</p>
+                </div>
+                <div class="glass-card text-center">
+                    <i class="ph ph-storefront icon-huge text-success"></i>
+                    <h1 id="stat-suppliers" class="display-value">0</h1>
+                    <p class="text-muted">Total Suppliers</p>
+                </div>
+                <div class="glass-card text-center">
+                    <i class="ph ph-warning-circle icon-huge text-danger"></i>
+                    <h1 id="stat-urgent" class="display-value">0</h1>
+                    <p class="text-muted">Urgent Cases</p>
+                </div>
+            </div>
+            <div class="glass-card mt-2 text-center">
+                <h3 id="stat-alert-msg">Connecting to live feed...</h3>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;"></div>
+
+    <!-- Donation Modal -->
+    <div id="donation-modal" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 10000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+        <div class="glass-card" style="width: 100%; max-width: 500px; padding: 32px; border-radius: 16px; text-align: center; background: var(--bg-card); position: relative;">
+            <i class="ph-fill ph-check-circle text-success" style="font-size: 4rem; margin-bottom: 1rem;"></i>
+            <h2 style="color: white; font-weight: bold; margin-bottom: 0.5rem;">Donation Request Sent!</h2>
+            <p id="donation-modal-subtitle" class="text-muted mb-2">Message delivered to NGO</p>
+            
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; text-align: left; max-height: 200px; overflow-y: auto; margin-bottom: 1.5rem;">
+                <pre id="donation-modal-message" style="color: var(--text-muted); font-family: monospace; font-size: 0.85rem; white-space: pre-wrap; margin: 0;"></pre>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button class="btn-outline-glass" onclick="copyDonationMessage()" style="flex: 1;"><i class="ph ph-copy"></i> Copy Message</button>
+                <button class="btn-primary" onclick="closeDonationModal()" style="flex: 1;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
