@@ -720,6 +720,4 @@ def _get_alert_message(high_need_ngos: int, high_surplus: int) -> str:
     else:
         return "✅ No urgent alerts. Supply and demand appear balanced in this area."
         
-from mangum import Mangum
 
-handler = Mangum(app)
